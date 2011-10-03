@@ -90,6 +90,7 @@ class ad9510spi  (object):
       return (memory, action, input)
 
    def run(self, data):
+      actions = []
       for line in data:         
          l = line.strip()
          self.begin()
@@ -100,10 +101,13 @@ class ad9510spi  (object):
             next_state = self.newstate(self.state, meaning)            
             (self.memory, action, input) = self.think(self.state, meaning, self.memory)
             #print ((self.state, byte, next_state, input, action))
-            print ((byte, action))
+            #print ((byte, action))
+            if action is not None:
+               actions.append(action)
             #print ((byte, meaning))
             self.state = next_state
          self.end()
+      return actions
 
    
 def main(argv):
@@ -126,7 +130,14 @@ def main(argv):
 
    
   p = ad9510spi()
-  p.run(spi.get_mosi())
+  cmds = p.run(spi.get_mosi())
+  #print cmds
+  for c in cmds:
+     tag = ("read" if c['read'] else "write")
+     length = c['bytes']
+     addr_start = c['addr_hex']
+     value = c['value_hex']
+     print "%-5s addr:%5s value:%4s" % (tag, addr_start, value)
 
 if __name__ == '__main__':
    sys.exit(main(sys.argv))
