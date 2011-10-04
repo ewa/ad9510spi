@@ -1,4 +1,25 @@
 #!/usr/bin/env python
+
+"""
+ad9510spi.py
+
+This module decodes a subset of the SPI packet structure defined
+for configuring Analog Devices' AD9510 clock distribution and PLL
+chips.  It is based on the AD9510 Data Sheet, Revision A (2005).
+It decodes only one-byte writes!
+
+This module expects the PHY-layer decoding to be handled by some
+other code (perhaps the SPI module in this package, as in the main
+function below.)  Its notion of a packet is a sequence of bits from
+the MOSI/SDIO line, corresponding to a CSB-low period.  Bit
+sequences are to be represented as strings of the characters '0'
+and '1'.
+
+Author: Eric Anderson http://www.ece.cmu.edu/~andersoe/
+Copyright 2011 Carnegie Mellon University.  All rights reserved.
+See README.TXT for details.
+"""
+
 import sys
 from vcd_reader import VcdEater
 from SPI import SPI

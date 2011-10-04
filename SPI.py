@@ -1,3 +1,22 @@
+"""
+SPI.py
+
+This module is a minimal protocol/logic analyzer for SPI busses.
+It takes as input value-change events (perhaps read from a VCD file
+by the vcd_reader module) and produces strings of bits from the
+MOSI/SDI/SDIO wire.  Each string represents one period of the
+CSB/CSN wire being low, and is composed of the characters '0' and
+'1'.  The SPI.get_mosi() function returns a Python list of strings
+for all the SPI communication periods observed since the object's
+initialization.  Bits from an incomplete period (CSN was observed
+to go low and has not yet gone high) will _NOT_ be returned, unless
+SPI.end() has been called first.
+
+Author: Eric Anderson http://www.ece.cmu.edu/~andersoe/
+Copyright 2011 Carnegie Mellon University.  All rights reserved.
+See README.TXT for details.
+"""
+
 import sys
 from vcd_reader import VcdEater
 
