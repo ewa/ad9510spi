@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
-import vcd2foo
+from vcd_reader import VcdEater
+from SPI import SPI
 
 class ad9510spi  (object):
 
@@ -114,9 +115,9 @@ def main(argv):
   vcdfile = "./foo.vcd"
 
 
-  foo = vcd2foo.VcdEater(vcdfile)
+  foo = VcdEater(vcdfile)
 
-  spi = vcd2foo.SPI(CPOL=0, CPHA=1,
+  spi = SPI(CPOL=0, CPHA=1,
             SCLK="revisit_ad9510./ad9510_hw/old_booter/clockEngine/SCLK",
             CSN="revisit_ad9510./ad9510_hw/old_booter/clockEngine/CSN",
             MOSI="revisit_ad9510./ad9510_hw/old_booter/clockEngine/SDIO")
