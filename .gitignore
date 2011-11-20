@@ -1,3 +1,14 @@
 *~
 *.pyc
 
+#ANTLR3/Python outputs
+*.tokens
+*Lexer.py
+*Parser.py
+*__.g
+
+#SCons junk
+.sconsign.dblite
+
+#Java Junk
+*.class

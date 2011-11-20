@@ -1,5 +1,9 @@
 grammar ValueChangeDump;
 
+options {
+    language=Python;
+}
+
 tokens {
     ENDDEFNS = '$enddefinitions';
     END= '$end';
@@ -45,6 +49,9 @@ tokens {
 
 /* Parser rules */
 
+vcd_file:	vcd_header simulation_commands ;
+
+// HEADER
 vcd_header
     : decl_command_list end_defns
     ;
@@ -122,11 +129,52 @@ var_type
     | WOR
     ;
 
+//COMMANDS
+
+simulation_commands
+	:	simulation_command+
+	;
+
+simulation_command 
+	:	simulation_time
+	|	value_change
+	|	ML_COMMENT
+	|	simulation_keyword (value_change)+ END
+	;
+
+simulation_keyword
+	:	DUMPALL | DUMPON | DUMPOFF | DUMPVARS
+	;
+
+simulation_time
+	:	OCTOTHORPE DEC_NUM
+	;
+	
+value_change
+	:	scalar_value_change
+	|	vector_value_change
+	;
+
+scalar_value_change
+	:	value IDENTIFIER
+	;
+
+// Throw an error if DEC_NUM is mult-digit
+value 	:	DEC_NUM | 'X' | 'x' | 'Z' | 'z'
+	;
+
+vector_value_change
+	:	BIN_NUM IDENTIFIER	
+	;
 /* Lexer rules */
 
 
-DEC_NUM :	'0'..'9'+
+DEC_NUM :	('0'..'9')+
     ;
+ 
+BIN_NUM :	('b'|'B')('x'|'X'|'z'|'Z'|'0'|'1')+
+	;   
+ 
 TIME_UNIT
 	:  's' | 'ms' | 'us' | 'ns' | 'ps' | 'fs'
 	;
@@ -158,9 +206,9 @@ IDENTIFIER :	('a'..'z'|'A'..'Z'|'_'|'!'..'/') ('a'..'z'|'A'..'Z'|'0'..'9'|'_'|'!
  */
  
 // Almost every non-space printable character.   The '..' operation here depends on the ASCII ordering
-// Note that I am departing from the IEEE standard by not allowing a digit as the first character.  That's a 
+// Note that I am departing from the IEEE standard by not allowing a digit, b, B, x, X, z, Z, #, or $ as the first character.  That's a 
 // hack to prevent strings like "10ns" from being lexed as an identifier.  So far, every VCD file I've looked at 
 // complies with this, but it's still technically wrong.
  IDENTIFIER
- 	: ('a'..'z'|'A'..'Z'|'_'|'!'..'/'|':'..'@')('!'..'~')+	
+ 	: ('a'|'c'..'w'|'y'|'A'|'C'..'W'|'Y'|'_'|'!'|'"'|'%'..'/'|':'..'@'|'{'..'~')('!'..'~')+	
  	;
