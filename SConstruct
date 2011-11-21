@@ -15,5 +15,14 @@ def antlr_py_emitter(target, source, env):
 antlr_py = Builder(action='java org.antlr.Tool $SOURCE', src_suffix='.g', emitter=antlr_py_emitter)
 env.Append(BUILDERS={'AntlrPy' : antlr_py})
 
-antlr_sources=env.AntlrPy('ValueChangeDump')
+env.Append(BUILDERS={'AntlrTreePy' :
+                     Builder(action='java org.antlr.Tool $SOURCE',
+                             src_suffix='.g',
+                             suffix='.py')})
+
+vcd_grammar = env.AntlrPy('ValueChangeDump')
+interpreter = env.AntlrTreePy('Interpret')
+Depends(interpreter, vcd_grammar)
+
+
 
