@@ -2,6 +2,7 @@ grammar ValueChangeDump;
 
 options {
     language=Python;
+    output=AST;
 }
 
 tokens {
@@ -38,13 +39,14 @@ tokens {
     WAND= 'wand';
     WIRE= 'wire';
     WOR= 'wor';
-}
 
-@rulecatch{
-	catch (RecognitionException e) {
-        reportError(e);
-                throw e;
-    }
+    HEADER;
+    FOO;
+    DECL;
+    DECLS;
+    NEWSCOPE;
+    NEWVAR;
+    DECLSCOPE;
 }
 
 /* Parser rules */
@@ -54,43 +56,48 @@ vcd_file:	vcd_header simulation_commands ;
 // HEADER
 vcd_header
     : decl_command_list end_defns
+        -> ^(HEADER decl_command_list)
     ;
 
 decl_command_list 
     : decl_command+
+        -> ^(DECLS decl_command+)
     ;
 
 decl_command 
     : vcd_decl_date
     | vcd_decl_version
     | vcd_decl_timescale
-    | vcd_scope
+    | vcd_scope 
     | vcd_decl_vars
-    ;
+;
 
 
 end_defns 
-    : ENDDEFNS END
+    : ENDDEFNS END ->
     ;
 
 vcd_decl_date 
-    : DATE
+    : DATE ->
     ;
 
 vcd_decl_version 
-    : VERSION
+    : VERSION ->
     ;
 
 vcd_decl_timescale
     : TIMESCALE DEC_NUM TIME_UNIT END
+        -> ^(TIMESCALE DEC_NUM TIME_UNIT)
     ;
 
 vcd_scope
     : vcd_decl_scope decl_command_list vcd_decl_upscope
+        -> ^(NEWSCOPE vcd_decl_scope decl_command_list)
     ;
 
 vcd_decl_scope 
     : SCOPE scope_type IDENTIFIER END
+        -> ^(DECLSCOPE scope_type IDENTIFIER)
     ;
 
 vcd_decl_upscope 
@@ -106,7 +113,8 @@ scope_type
     ;
 
 vcd_decl_vars
-    : VAR var_type DEC_NUM IDENTIFIER IDENTIFIER END
+    : VAR type=var_type size=DEC_NUM id_code=IDENTIFIER ref=IDENTIFIER END
+        -> ^(NEWVAR $type $size $id_code $ref)
     ;
 
 var_type

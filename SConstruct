@@ -2,7 +2,7 @@ import os
 import re
 
 env = Environment();
-env.Append(ENV={'CLASSPATH':os.environ['CLASSPATH']});
+env.Append(ENV={'CLASSPATH':'/usr/share/java/stringtemplate.jar:/usr/share/java/antlr-3.1.3.jar'})
 
 def antlr_py_emitter(target, source, env):
     target=[]
@@ -10,10 +10,9 @@ def antlr_py_emitter(target, source, env):
     target.append(fname+'Lexer.py')
     target.append(fname+'Parser.py')
     target.append(fname+'.tokens')
-    print [str(s) for s in source]
     return (target, source)
     
-antlr_py = Builder(action='antlr3 $SOURCE', src_suffix='.g', emitter=antlr_py_emitter)
+antlr_py = Builder(action='java org.antlr.Tool $SOURCE', src_suffix='.g', emitter=antlr_py_emitter)
 env.Append(BUILDERS={'AntlrPy' : antlr_py})
 
 antlr_sources=env.AntlrPy('ValueChangeDump')
