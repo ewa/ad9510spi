@@ -2,8 +2,13 @@ This package provides the ability to interpret some communication
 messages contained in VCD (Value Change Dump) files.  There are three
 components:
 
-vcd_reader.py processess VCD files and delivers value change
-   notifications to subscribed observers.
+cmu_vcd.py processess VCD files and delivers value change
+   notifications to subscribed observers.  This wraps ANTLR-generated
+   parser code:
+   * ValueChangeDump.g -- A near-complete VCD grammar; produces an AST.
+   * InterpretVCDHeader.g -- Tree-walker which extracts id_code
+     definitions and scopes
+
 
 SPI.py receives notifications from vcd_reader, and reconstructs
    SPI-protocol compliant messages (as strings of bits).
@@ -12,11 +17,6 @@ ad9510spi.py takes in strings of bits, and interprets them as command
    messages for Analog Devices AD9510 clock chips.
 
 -----------------------
-
-NOTE: vcd_reader.py is based on work by Donald McCarthy.  We do not
-(yet) have a license to distribute this code, and therefore none of
-the permissions stated below apply to it!
-
 
 Copyright 2011 Carnegie Mellon University. All rights reserved.
 
