@@ -53,6 +53,7 @@ tokens {
     TIME;
     SCALAR_CHANGE;
     VECTOR_CHANGE;
+    SCALAR_VALUE;
 }
 
 /* Parser rules */
@@ -180,7 +181,17 @@ scalar_value_change
 	;
 
 // Throw an error if DEC_NUM is mult-digit
-value 	:	DEC_NUM | 'X' | 'x' | 'Z' | 'z'
+value 	
+    : DEC_NUM 
+        -> ^(SCALAR_VALUE[$DEC_NUM.text])
+    | 'X' 
+        -> ^(SCALAR_VALUE['X'])
+    | 'x' 
+        -> ^(SCALAR_VALUE['x'])
+    | 'Z' 
+        -> ^(SCALAR_VALUE['Z'])
+    | 'z'
+        -> ^(SCALAR_VALUE['z'])      
 	;
 
 vector_value_change

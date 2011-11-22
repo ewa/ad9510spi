@@ -21,8 +21,10 @@ See README.TXT for details.
 """
 
 import sys
-from vcd_reader import VcdEater
+#from vcd_reader import VcdEater
+from cmu_vcd import AntlrVCD
 from SPI import SPI
+
 
 class ad9510spi  (object):
 
@@ -133,19 +135,17 @@ class ad9510spi  (object):
 
    
 def main(argv):
-  vcdfile = "./foo.vcd"
-
-
-  foo = VcdEater(vcdfile)
+  vcdfile = "./foo.vcd"  
+  #foo = VcdEater(vcdfile)
+  foo = AntlrVCD(file(vcdfile))
 
   spi = SPI(CPOL=0, CPHA=1,
-            SCLK="revisit_ad9510./ad9510_hw/old_booter/clockEngine/SCLK",
-            CSN="revisit_ad9510./ad9510_hw/old_booter/clockEngine/CSN",
-            MOSI="revisit_ad9510./ad9510_hw/old_booter/clockEngine/SDIO")
-  spi.register(foo.vcd)
-
-
-  foo.process()
+            SCLK="/ad9510_hw/old_booter/clockEngine/SCLK",
+            CSN="/ad9510_hw/old_booter/clockEngine/CSN",
+            MOSI="/ad9510_hw/old_booter/clockEngine/SDIO")
+  spi.register(foo)
+  
+  foo.go()
   spi.end()
 
   print '\n'.join(spi.get_mosi())

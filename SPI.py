@@ -18,7 +18,7 @@ See README.TXT for details.
 """
 
 import sys
-from vcd_reader import VcdEater
+from cmu_vcd import AntlrVCD
 
 class SPI (object):
 
@@ -37,6 +37,12 @@ class SPI (object):
     self.sequences = []
     self.current_sequence = None
 
+  def __coerce_to_int(self, multistate):
+    if multistate is None:
+      return None
+    v = int(multistate)
+    return v
+
   def register(self, vcd):
     self.vcd = vcd    
     vcd.reg_by_name(self.sclk_name, self.obs_sclk)
@@ -50,14 +56,17 @@ class SPI (object):
       self.current_sequence.append(self.mosi_state)
 
     
-  def obs_sclk(self, now, id, name, old_value, new_value, first):    
-    #print "%-6d %-8s/ %-30s: %10s -> %10s" % (now, id,name,old_value,new_value)
+  def obs_sclk(self, now, id, name, old_value, new_value, first):
+    old_value = self.__coerce_to_int(old_value)
+    new_value = self.__coerce_to_int(new_value)
+    #print "%-6d %-8s/ %-30s: %10s -> %10s" % (now, id,name,repr(old_value),repr(new_value))
     self.sclk_state = new_value
     #print "CPOL=%1d,CPHA=%d" % (self.CPOL, self.CPHA)
-
-
+    
     rising = (old_value == 0 and new_value == 1)
     falling = (old_value == 1 and new_value == 0)
+
+    #print rising, falling
 
     if   (self.CPOL==0 and self.CPHA == 0 and rising):
       self._sample_mosi()
@@ -71,6 +80,9 @@ class SPI (object):
       
       
   def obs_csn(self, now, id, name, old_value, new_value, first):
+    old_value = self.__coerce_to_int(old_value)
+    new_value = self.__coerce_to_int(new_value)
+
     self.csn_state = new_value
     rising = (old_value == 0 and new_value == 1)
     falling = (old_value == 1 and new_value == 0)
@@ -100,6 +112,9 @@ class SPI (object):
     
     
   def obs_mosi(self, now, id, name, old_value, new_value, first):
+    old_value = self.__coerce_to_int(old_value)
+    new_value = self.__coerce_to_int(new_value)
+
     self.mosi_state = new_value
     rising = (old_value == 0 and new_value == 1)
     falling = (old_value == 1 and new_value == 0)
@@ -118,18 +133,16 @@ class SPI (object):
 def main(args):
   
   vcdfile = "./foo.vcd"
-
-
-  foo = VcdEater(vcdfile)
+  foo = AntlrVCD(file(vcdfile))
 
   spi = SPI(CPOL=0, CPHA=0,
-            SCLK="revisit_ad9510./ad9510_hw/old_booter/clockEngine/SCLK",
-            CSN="revisit_ad9510./ad9510_hw/old_booter/clockEngine/CSN",
-            MOSI="revisit_ad9510./ad9510_hw/old_booter/clockEngine/SDIO")
-  spi.register(foo.vcd)
+            SCLK="/ad9510_hw/old_booter/clockEngine/SCLK",
+            CSN="/ad9510_hw/old_booter/clockEngine/CSN",
+            MOSI="/ad9510_hw/old_booter/clockEngine/SDIO")
+  spi.register(foo)
 
 
-  foo.process()
+  foo.go()
   spi.end()
 
   print spi.get_mosi()

@@ -56,7 +56,7 @@ sim_time [context]
     ;
 
 value_change [context]
-    : ^(SCALAR_CHANGE id=IDENTIFIER v=.)
+    : ^(SCALAR_CHANGE id=IDENTIFIER v=SCALAR_VALUE)
         {
             context.scalar_change($id.text, $v.text)
         }
