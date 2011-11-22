@@ -6,6 +6,11 @@
 *Lexer.py
 *Parser.py
 *__.g
+VCDSimulation.py
+InterpretVCDHeader.py
+
+#AntlrWorks auto-goo
+output/
 
 #SCons junk
 .sconsign.dblite

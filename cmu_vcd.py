@@ -5,7 +5,7 @@ import antlr3
 from antlr3.tree import CommonTree
 from ValueChangeDumpLexer import ValueChangeDumpLexer, EOF
 from ValueChangeDumpParser import ValueChangeDumpParser
-from Interpret import Interpret
+from InterpretVCDHeader import InterpretVCDHeader
 from VCDSimulation import VCDSimulation
 
 class VCDContext:
@@ -83,8 +83,8 @@ def process_header(parser, tokenStream):
 
     nodes = antlr3.tree.CommonTreeNodeStream(root)
     nodes.setTokenStream(tokenStream)
-    interpret = Interpret(nodes)
-    result = interpret.vcd_header()
+    h = InterpretVCDHeader(nodes)
+    result = h.vcd_header()
     return result
 
 def process_body(parser, tokenStream, context):

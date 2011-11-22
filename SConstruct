@@ -21,7 +21,7 @@ env.Append(BUILDERS={'AntlrTreePy' :
                              suffix='.py')})
 
 vcd_grammar = env.AntlrPy('ValueChangeDump')
-interpreter = env.AntlrTreePy('Interpret')
+interpreter = env.AntlrTreePy('InterpretVCDHeader')
 Depends(interpreter, vcd_grammar)
 sim = env.AntlrTreePy('VCDSimulation')
 Depends(sim, vcd_grammar)

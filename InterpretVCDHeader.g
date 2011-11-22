@@ -1,4 +1,4 @@
-tree grammar Interpret;
+tree grammar InterpretVCDHeader;
 
 options {
     language=Python;
