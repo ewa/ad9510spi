@@ -47,6 +47,12 @@ tokens {
     NEWSCOPE;
     NEWVAR;
     DECLSCOPE;
+    BINVEC;
+
+    SIM_COMMAND;
+    TIME;
+    SCALAR_CHANGE;
+    VECTOR_CHANGE;
 }
 
 /* Parser rules */
@@ -145,9 +151,13 @@ simulation_commands
 
 simulation_command 
 	:	simulation_time
+        -> ^(SIM_COMMAND simulation_time)
 	|	value_change
+        -> ^(SIM_COMMAND value_change)
 	|	ML_COMMENT
+        -> ^(ML_COMMENT)
 	|	simulation_keyword (value_change)+ END
+        ->
 	;
 
 simulation_keyword
@@ -156,6 +166,7 @@ simulation_keyword
 
 simulation_time
 	:	OCTOTHORPE DEC_NUM
+        -> ^(TIME DEC_NUM)
 	;
 	
 value_change
@@ -165,6 +176,7 @@ value_change
 
 scalar_value_change
 	:	value IDENTIFIER
+        -> ^(SCALAR_CHANGE IDENTIFIER value)
 	;
 
 // Throw an error if DEC_NUM is mult-digit
@@ -172,8 +184,11 @@ value 	:	DEC_NUM | 'X' | 'x' | 'Z' | 'z'
 	;
 
 vector_value_change
-	:	BIN_NUM IDENTIFIER	
+	:	n=BIN_NUM IDENTIFIER
+        // What?  This is a fugly work-around for the fact that [] doesn't play nice with antlr
+        -> ^(VECTOR_CHANGE IDENTIFIER BINVEC[$n.text.__getslice__(1,len($n.text))])
 	;
+
 /* Lexer rules */
 
 

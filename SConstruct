@@ -23,6 +23,8 @@ env.Append(BUILDERS={'AntlrTreePy' :
 vcd_grammar = env.AntlrPy('ValueChangeDump')
 interpreter = env.AntlrTreePy('Interpret')
 Depends(interpreter, vcd_grammar)
+sim = env.AntlrTreePy('VCDSimulation')
+Depends(sim, vcd_grammar)
 
 
 

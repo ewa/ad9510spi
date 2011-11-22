@@ -1,4 +1,4 @@
-tree grammar Interpret;
+tree grammar VCDSimulation;
 
 options {
     language=Python;
@@ -23,7 +23,7 @@ decl_command [stack]
     : ^(TIMESCALE DEC_NUM TIME_UNIT)
     | ^(NEWVAR type=. size=DEC_NUM id_code=IDENTIFIER ref=IDENTIFIER)
         {
-         myvar={'code':$id_code.text,'ref':$ref.text,'scope':$stack,'size':int($size.text)};
+         myvar={'code':$id_code.text,'ref':$ref.text,'scope':$stack};
          self.vars[$id_code.text]=myvar;
         }
     | vcd_scope[stack=stack]
@@ -40,5 +40,29 @@ vcd_scope [stack]
 vcd_decl_scope returns [label]
     : ^(DECLSCOPE type=. IDENTIFIER)
         {$label=$IDENTIFIER.text}   
+    ;
+
+
+simulation_command [context]
+    : ^(SIM_COMMAND sim_time [context])
+    | ^(SIM_COMMAND value_change [context]) 
+    ;
+
+sim_time [context]
+    : ^(TIME DEC_NUM)
+        {
+            context.note_time(int($DEC_NUM.text))
+        }
+    ;
+
+value_change [context]
+    : ^(SCALAR_CHANGE id=IDENTIFIER v=.)
+        {
+            context.scalar_change($id.text, $v.text)
+        }
+    | ^(VECTOR_CHANGE id=IDENTIFIER BINVEC)
+        {
+            context.vector_change($id.text, $BINVEC.text)
+        }
     ;
 
